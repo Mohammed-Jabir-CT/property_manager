@@ -20,9 +20,9 @@
                     <div class="mb-3">
                         <label for="type" class="form-label">Type</label>
                         <select name="type" id="type" class="form-select" required>
-                            <option value="" selected disabled>Select Type</option>
-                            <option value="rent">Rent</option>
-                            <option value="sale">Sale</option>
+                            <option value="" disabled>Select Type</option>
+                            <option value="rent" {{ $property->type == 'rent' ? 'selected' : '' }}>Rent</option>
+                            <option value="sale" {{ $property->type == 'sale' ? 'selected' : '' }}>Sale</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -40,12 +40,26 @@
                         <select name="region_id" id="region_id" class="form-select" required>
                             <option value="" selected disabled>Select Region</option>
                             @foreach ($regions as $region)
-                                <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                <option value="{{ $region->id }}"
+                                    {{ $property->region_id == $region->id ? 'selected' : '' }}>
+                                    {{ $region->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
+                    @if ($property->featured_image)
+                        <div class="mb-3">
+                            <label for="current_image" class="form-label">Current Image</label>
+                            <div>
+                                <img src="{{ asset('storage/' . $property->featured_image) }}" alt="Current Image"
+                                    class="img-fluid" style="max-height: 200px;">
+                            </div>
+                        </div>
+                    @else
+                        <span>No Image Uploaded</span>
+                    @endif
                     <div class="mb-3">
-                        <label for="featured_image" class="form-label">Featured Image</label>
+                        <label for="featured_image" class="form-label">Replace Image</label>
                         <input type="file" class="form-control" id="featured_image" name="featured_image" required>
                     </div>
                     @if ($errors->any())

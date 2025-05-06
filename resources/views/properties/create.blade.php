@@ -21,8 +21,8 @@
                         <label for="type" class="form-label">Type</label>
                         <select name="type" id="type" class="form-select" required>
                             <option value="" selected disabled>Select Type</option>
-                            <option value="rent">Rent</option>
-                            <option value="sale">Sale</option>
+                            <option value="rent" {{ old('type') == 'rent' ? 'selected' : '' }}>Rent</option>
+                            <option value="sale" {{ old('type') == 'sale' ? 'selected' : '' }}>Sale</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -36,11 +36,13 @@
                             name="location" required>
                     </div>
                     <div class="mb-3">
-                        <label for="type" class="form-label">Region</label>
+                        <label for="region_id" class="form-label">Region</label>
                         <select name="region_id" id="region_id" class="form-select" required>
                             <option value="" selected disabled>Select Region</option>
                             @foreach ($regions as $region)
-                                <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                <option value="{{ $region->id }}" {{ old('region_id') == $region->id ? 'selected' : '' }}>
+                                    {{ $region->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>

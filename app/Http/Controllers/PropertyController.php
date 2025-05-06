@@ -16,35 +16,59 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $query = Property::with('region');
 
-            $data = Property::with('region');
+            if ($request->title) {
+                $query->where('title', 'like', '%' . $request->title . '%');
+            }
 
-            return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($row){
-       
-                            $view = route('properties.show', ['property' => $row->id]);
-                            $edit = route('properties.edit', $row->id);
-                            $delete = $row->id;
-                            $viewBtn = '<a href="' . $view . '" class="edit btn btn-primary btn-sm">View</a>';
-                            $editBtn = '<a href="' . $edit . '" class="edit btn btn-warning btn-sm">Edit</a>';
-                            $deleteBtn = '<a onclick="deleteProperty('. $delete .')" class="edit btn btn-danger btn-sm">Delete</a>';
+            if ($request->type) {
+                $query->where('type', 'like', '%' . $request->type . '%');
+            }
 
-      
-                            return $viewBtn . ' ' . $editBtn . ' ' . $deleteBtn;
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
+            if ($request->location) {
+                $query->where('location', 'like', '%' . $request->location . '%');
+            }
+
+            if ($request->region) {
+                $query->where('region_id', $request->region);
+            }
+
+            if ($request->status) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->price_min) {
+                $query->where('price', '>=', $request->price_min);
+            }
+
+            if ($request->price_max) {
+                $query->where('price', '<=', $request->price_max);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $edit = route('properties.edit', $row->id);
+                    $delete = $row->id;
+                    $editBtn = '<a href="' . $edit . '" class="edit btn btn-warning btn-sm">Edit</a>';
+                    $deleteBtn = '<a onclick="deleteProperty(' . $delete . ')" class="delete btn btn-danger btn-sm">Delete</a>';
+                    return $editBtn . ' ' . $deleteBtn;
+                })
+                ->addColumn('image', function ($row) {
+                    if ($row->featured_image) {
+                        $url = Storage::url($row->featured_image);
+                        return '<img src="' . $url . '" alt="Property Image" style="width: 50px; height: 50px; object-fit: cover;">';
+                    } else {
+                        return '<span>No Image</span>';
+                    }
+                })
+                ->rawColumns(['action', 'image'])
+                ->make(true);
         }
-          
-        return view('properties.index');
-        // $properties = Property::with('region')->get();
-        // return view('properties.index', [
-        //     'properties' => $properties
-        // ]);
 
-        // return $dataTable->render('properties.index');
-
+        $regions = Region::all();
+        return view('properties.index', compact('regions'));
     }
 
     /**
@@ -64,7 +88,7 @@ class PropertyController extends Controller
     public function store(Request $request)
     {
 
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -90,7 +114,7 @@ class PropertyController extends Controller
             $property->featured_image = $imagePath;
         }
         $property->save();
-        
+
         return redirect()->route('properties.index');
     }
 

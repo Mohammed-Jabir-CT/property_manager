@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->longText('description');
             $table->enum('type', ['rent', 'sale']);
-            $table->bigInteger('price');
+            $table->decimal('price', 15, 2);
             $table->string('location');
             $table->foreignId('region_id')->nullable()->constrained('regions')->nullOnDelete();
             $table->enum('status', ['available', 'pending', 'sold'])->default('available');

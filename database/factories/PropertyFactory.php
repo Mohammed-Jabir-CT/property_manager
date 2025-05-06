@@ -25,7 +25,7 @@ class PropertyFactory extends Factory
             'type' => $this->faker->randomElement(['rent', 'sale']),
             'location' => $this->faker->address(),
             'status' => $this->faker->randomElement(['available', 'pending', 'sold']),
-            'featured_image' => $this->faker->imageUrl(),
+            'featured_image' => null,
         ];
     }
 }
